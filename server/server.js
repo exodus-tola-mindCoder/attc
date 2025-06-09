@@ -14,6 +14,7 @@ const app = express();
 
 // impoty routes
 import authRoutes from './routes/auth.routes.js';
+import studentRoutes from './routes/students.routes.js';
 
 dotenv.config();
 // app.use(cors(corsOptions));
@@ -25,7 +26,7 @@ const PORT = process.env.PORT || 3000;
 
 // // Routes
 app.use('/api/auth', authRoutes);
-// app.use('/api/students', studentRoutes);
+app.use('/api/students', studentRoutes);
 // app.use('/api/messages', messageRoutes);
 // app.use('/api/courses', courseRoutes);
 // app.use('/api/analytics', analyticsRoutes);
