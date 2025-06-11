@@ -10,16 +10,21 @@ export const registerStudent = async (req, res) => {
       familyInfo,
       healthInfo,
     } = req.body;
-
+    
+    // Check if the user already has a student profile
+    const existingStudent = await Student.findOne({ userId: req.user._id });
+    if (existingStudent) {
+      return res.status(400).json({ message: 'Student profile already exists' });
+    }
     // Generate student ID
-
+    
     const studentCount = await Student.countDocuments();
     const studentId = `STU${(studentCount + 1).toString().padStart(6, '0')}`;
 
     // create student profile
 
     const student = new Student({
-      userI: req.user._id,
+      userId: req.user._id, // link to the authenticated user
       fullName,
       studentId,
       backgroundEducation,
@@ -47,7 +52,14 @@ export const getAllStudents = async (req, res) => {
   try {
     const { page = 1, limit = 10, search, city, disability } = req.query;
 
+
+    // Parse page and limit as integers
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
     let query = {};
+
+
 
 
     // Add search filters
@@ -83,7 +95,7 @@ export const getAllStudents = async (req, res) => {
       students,
       totalPages: Math.ceil(total / limit),
       currentPage: page,
-      total
+      total: totalCount,
     });
 
   } catch (error) {

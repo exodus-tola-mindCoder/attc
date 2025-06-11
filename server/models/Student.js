@@ -3,8 +3,9 @@ import mongoose from 'mongoose';
 const studentSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
+    ref: 'User', // reference the User model
+    required: true,
+    unique: true // Ensure one to one relationship b/n User and Student
   },
   fullName: {
     type: String,

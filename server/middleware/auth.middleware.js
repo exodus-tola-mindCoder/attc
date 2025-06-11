@@ -4,17 +4,17 @@ import User from '../models/User.js';
 export const authenticateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    let token;
 
-    // Check if the header contains "Bearer" or just the token
-    if (authHeader?.startsWith('Bearer ')) {
-      token = authHeader.split(' ')[1];
-    } else {
-      token = authHeader; // Assume the header contains only the token
+    if (!authHeader) {
+      return res.status(401).json({ message: 'Authorization header is required' });
     }
 
-    console.log('Authorization Header:', req.headers.authorization);
-    console.log('Token:', token);
+    let token;
+    if (authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    } else {
+      token = authHeader;
+    }
 
     if (!token) {
       return res.status(401).json({ message: 'Access token required' });
@@ -30,6 +30,9 @@ export const authenticateToken = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token has expired' });
+    }
     return res.status(403).json({ message: 'Invalid or expired token' });
   }
 };
