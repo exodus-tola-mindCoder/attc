@@ -18,6 +18,9 @@ import studentRoutes from './routes/students.route.js';
 import courseRoutes from './routes/courses.route.js';
 import departmentRoutes from './routes/departments.route.js'
 import instructorRoutes from './routes/instructors.route.js'
+import courseRegistrationRoutes from './routes/courseRegistrations.route.js'
+import semesterRoutes from './routes/semesters.route.js'
+
 
 dotenv.config();
 // app.use(cors(corsOptions));
@@ -30,6 +33,8 @@ const PORT = process.env.PORT || 3000;
 // // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
+app.use('/api/semesters', semesterRoutes);
+app.use('/api/course-registrations', courseRegistrationRoutes);
 // app.use('/api/messages', messageRoutes);
 app.use('/api/courses', courseRoutes);
 // app.use('/api/analytics', analyticsRoutes);
