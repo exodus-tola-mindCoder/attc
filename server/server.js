@@ -13,10 +13,11 @@ const app = express();
 // };
 
 // impoty routes
-import authRoutes from './routes/auth.routes.js';
-import studentRoutes from './routes/students.routes.js';
+import authRoutes from './routes/auth.route.js';
+import studentRoutes from './routes/students.route.js';
 import courseRoutes from './routes/courses.route.js';
-import departmentRoutes from './routes/departments.routes.js'
+import departmentRoutes from './routes/departments.route.js'
+import instructorRoutes from './routes/instructors.route.js'
 
 dotenv.config();
 // app.use(cors(corsOptions));
@@ -33,7 +34,7 @@ app.use('/api/students', studentRoutes);
 app.use('/api/courses', courseRoutes);
 // app.use('/api/analytics', analyticsRoutes);
 // app.use('/api/health', healthRoutes);
-// app.use('/api/instructors', instructorRoutes);
+app.use('/api/instructors', instructorRoutes);
 // app.use('/api/leave', leaveRoutes);
 app.use('/api/departments', departmentRoutes);
 // app.use('/api/feedback', feedbackRoutes);

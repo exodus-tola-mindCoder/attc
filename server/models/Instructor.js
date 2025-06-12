@@ -18,7 +18,8 @@ const instructorSchema = new mongoose.Schema({
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
       },
       message: 'Please provide a valid email address'
-    }
+    },
+    index: true // Keep this
   },
   phone: {
     type: String,
@@ -97,10 +98,9 @@ const instructorSchema = new mongoose.Schema({
 });
 
 // Indexes
-instructorSchema.index({ email: 1 });
+
 instructorSchema.index({ department: 1 });
 instructorSchema.index({ isActive: 1 });
-
 // Virtual for full course details
 instructorSchema.virtual('courses', {
   ref: 'Course',

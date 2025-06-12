@@ -3,9 +3,9 @@ import RedisStore from 'rate-limit-redis';
 import Redis from 'ioredis';
 import logger from '../utils/logger.js';
 
-import dontenv from 'dotenv'
+import dotenv from 'dotenv';  
 
-dontenv.config();
+dotenv.config();
 
 // Create Redis client for rate limiting (optional - falls back to memory store)
 let redisClient;
@@ -40,8 +40,8 @@ const rateLimiter = rateLimit({
   }
 });
 
-
 export default rateLimiter;
+
 // Strict rate limiter for sensitive operations
 export const strictRateLimiter = rateLimit({
   store: redisClient ? new RedisStore({
