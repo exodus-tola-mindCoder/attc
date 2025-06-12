@@ -1,7 +1,16 @@
 import express from 'express'
+import rateLimiter from '../middleware/rateLimiter.js';
+
+import {
+  getAllDepartments,
+  getDepartmentById,
+  updateDepartment,
+  deleteDepartment,
+  getDepartmentStatistics
+} from '../controllers/departmentController.js';
 
 import { body, param, query } from 'express-validator';
-import { authenticateToken, requireRole } from '../middleware/auth.middleware';
+import { authenticateToken, requireRole } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 

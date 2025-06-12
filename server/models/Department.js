@@ -6,7 +6,8 @@ const departmentSchema = new mongoose.Schema({
     required: [true, 'Department name is required'],
     unique: true,
     trim: true,
-    maxlength: [100, 'Department name cannot exceed 100 characters']
+    maxlength: [100, 'Department name cannot exceed 100 characters'],
+    index: true 
   },
   code: {
     type: String,
@@ -14,7 +15,8 @@ const departmentSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     uppercase: true,
-    maxlength: [10, 'Department code cannot exceed 10 characters']
+    maxlength: [10, 'Department code cannot exceed 10 characters'],
+    index: true 
   },
   head: {
     type: String,
@@ -108,10 +110,22 @@ const departmentSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Indexes
-departmentSchema.index({ name: 1 });
-departmentSchema.index({ code: 1 });
+// Indexing for improved query performance
+// departmentSchema.index({ name: 1 });
+// departmentSchema.index({ code: 1 });
 departmentSchema.index({ faculty: 1 });
 departmentSchema.index({ isActive: 1 });
+
+// Error handling for unique constraint violations
+departmentSchema.post('save', function (error, doc, next) {
+  if (error.name === 'MongoError' && error.code === 11000) {
+    next(new Error('There was a duplicate key error'));
+  } else {
+    next(error);
+  }
+});
+
+// Improved index management for production readiness
+mongoose.set('autoIndex', process.env.NODE_ENV === 'development');
 
 export default mongoose.model('Department', departmentSchema);
