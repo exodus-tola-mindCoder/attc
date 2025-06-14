@@ -38,7 +38,7 @@ app.use('/api/course-registrations', courseRegistrationRoutes);
 // app.use('/api/messages', messageRoutes);
 app.use('/api/courses', courseRoutes);
 // app.use('/api/analytics', analyticsRoutes);
-// app.use('/api/health', healthRoutes);
+app.use('/api/health', healthRoutes);
 app.use('/api/instructors', instructorRoutes);
 // app.use('/api/leave', leaveRoutes);
 app.use('/api/departments', departmentRoutes);
