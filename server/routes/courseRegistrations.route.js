@@ -10,7 +10,7 @@ import {
   getRegistrationStatistics,
   getAvailableCourses
 } from '../controllers/courseRegistrationController.js';
-import { auth, authorize } from '../middleware/auth.middleware.js';
+import { authenticateToken, requireRole } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
@@ -32,15 +32,15 @@ const statusUpdateValidation = [
 ];
 
 // Student routes
-router.post('/register', auth, authorize(['student']), registrationValidation, registerForCourses);
-router.get('/my-registrations', auth, authorize(['student']), getStudentRegistrations);
-router.put('/drop/:registrationId', auth, authorize(['student']), dropCourse);
-router.get('/available-courses', auth, authorize(['student']), getAvailableCourses);
+router.post('/register', authenticateToken, requireRole(['student']), registrationValidation, registerForCourses);
+router.get('/my-registrations', authenticateToken, requireRole(['student']), getStudentRegistrations);
+router.put('/drop/:registrationId', authenticateToken, requireRole(['student']), dropCourse);
+router.get('/available-courses', authenticateToken, requireRole(['student']), getAvailableCourses);
 
 // Admin routes
-router.get('/', auth, authorize(['admin']), getAllRegistrations);
-router.put('/:registrationId/status', auth, authorize(['admin']), statusUpdateValidation, updateRegistrationStatus);
-router.put('/:registrationId/grade', auth, authorize(['admin']), gradeValidation, addGrade);
-router.get('/statistics', auth, authorize(['admin']), getRegistrationStatistics);
+router.get('/', authenticateToken, requireRole(['admin']), getAllRegistrations);
+router.put('/:registrationId/status', authenticateToken, requireRole(['admin']), statusUpdateValidation, updateRegistrationStatus);
+router.put('/:registrationId/grade', authenticateToken, requireRole(['admin']), gradeValidation, addGrade);
+router.get('/statistics', authenticateToken, requireRole(['admin']), getRegistrationStatistics);
 
 export default router;

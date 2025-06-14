@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
-import { Bar, Doughnut, Line } from 'react-chartjs-2';
+import { Bar, Doughnut, Line } from 'chart.js';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -28,7 +29,6 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  FileText,
   Download
 } from 'lucide-react';
 

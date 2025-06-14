@@ -20,6 +20,11 @@ import departmentRoutes from './routes/departments.route.js'
 import instructorRoutes from './routes/instructors.route.js'
 import courseRegistrationRoutes from './routes/courseRegistrations.route.js'
 import semesterRoutes from './routes/semesters.route.js'
+import healthRoutes from './routes/health.route.js'
+import analyticsRoutes from './routes/analytics.route.js'
+import messageRoutes from './routes/messages.route.js'
+import feedbackRoutes from './routes/feedback.route.js'
+import leaveRoutes from './routes/leave.route.js'
 
 
 dotenv.config();
@@ -35,14 +40,14 @@ app.use('/api/auth', authRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/semesters', semesterRoutes);
 app.use('/api/course-registrations', courseRegistrationRoutes);
-// app.use('/api/messages', messageRoutes);
+app.use('/api/messages', messageRoutes);
 app.use('/api/courses', courseRoutes);
-// app.use('/api/analytics', analyticsRoutes);
+app.use('/api/analytics', analyticsRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/instructors', instructorRoutes);
-// app.use('/api/leave', leaveRoutes);
+app.use('/api/leave', leaveRoutes);
 app.use('/api/departments', departmentRoutes);
-// app.use('/api/feedback', feedbackRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 
 app.listen(PORT, () => {

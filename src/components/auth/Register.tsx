@@ -48,6 +48,7 @@ const Register: React.FC<RegisterProps> = ({ onToggleMode }) => {
 
     try {
       await register(formData.username, formData.email, formData.password, formData.role);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setError(error.response?.data?.message || 'Registration failed');
     } finally {

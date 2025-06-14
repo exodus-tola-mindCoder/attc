@@ -32,6 +32,7 @@ const Login: React.FC<LoginProps> = ({ onToggleMode }) => {
 
     try {
       await login(formData.email, formData.password);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       setError(error.response?.data?.message || 'Login failed');
     } finally {

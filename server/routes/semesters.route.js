@@ -1,8 +1,18 @@
 import express from 'express';
 import { body } from 'express-validator';
 
+import {
+  getSemesters,
+  getActiveSemester,
+  getSemesterStatistics,
+  createSemester,
+  updateSemester,
+  deleteSemester,
+  setActiveSemester
+} from '../controllers/semesterController.js'
 
-import { auth, authorize } from '../middleware/auth.middleware.js';
+
+import { authenticateToken, requireRole } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
@@ -31,14 +41,14 @@ const updateSemesterValidation = [
 
 
 // Public routes (accessible to all authenticated users)
-router.get('/', auth, getSemesters);
-router.get('/active', auth, getActiveSemester);
-router.get('/:id/statistics', auth, authorize(['admin']), getSemesterStatistics);
+router.get('/', authenticateToken, getSemesters);
+router.get('/active', authenticateToken, getActiveSemester);
+router.get('/:id/statistics', authenticateToken, requireRole(['admin']), getSemesterStatistics);
 
 // Admin only routes
-router.post('/', auth, authorize(['admin']), semesterValidation, createSemester);
-router.put('/:id', auth, authorize(['admin']), updateSemesterValidation, updateSemester);
-router.delete('/:id', auth, authorize(['admin']), deleteSemester);
-router.put('/:id/activate', auth, authorize(['admin']), setActiveSemester);
+router.post('/', authenticateToken, requireRole(['admin']), semesterValidation, createSemester);
+router.put('/:id', authenticateToken, requireRole(['admin']), updateSemesterValidation, updateSemester);
+router.delete('/:id', authenticateToken, requireRole(['admin']), deleteSemester);
+router.put('/:id/activate', authenticateToken, requireRole(['admin']), setActiveSemester);
 
 export default router;
