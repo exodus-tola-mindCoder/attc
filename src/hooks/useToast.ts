@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { ToastProps } from '../components/common/Toast';
+import  ToastProps  from '../components/common/Toast';
 
 export const useToast = () => {
   const [toasts, setToasts] = useState<ToastProps[]>([]);

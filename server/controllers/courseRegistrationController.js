@@ -3,9 +3,9 @@ import Course from '../models/Course.js';
 import Semester from '../models/Semester.js';
 import Student from '../models/Student.js';
 import { validationResult } from 'express-validator';
+import mongoose from 'mongoose';
 
-// Register for courses (student)
-
+// Register for courses (Student)
 export const registerForCourses = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -21,7 +21,6 @@ export const registerForCourses = async (req, res) => {
 
     // Get student profile
     const student = await Student.findOne({ userId: req.user.id });
-
     if (!student) {
       return res.status(404).json({
         success: false,
@@ -29,21 +28,21 @@ export const registerForCourses = async (req, res) => {
       });
     }
 
-    // verify semster exists and registration is open
-    const semester = await Semester.findById(semesterId); if (!semester) {
+    // Verify semester exists and registration is open
+    const semester = await Semester.findById(semesterId);
+    if (!semester) {
       return res.status(404).json({
         success: false,
         message: 'Semester not found'
       });
     }
 
-
-    if (!semester.isRegistrationOpen) {
+    if (!semester.isRegistrationCurrentlyOpen) {
       return res.status(400).json({
         success: false,
         message: 'Course registration is not currently open for this semester'
       });
-    } s
+    }
 
     // Verify all courses exist and belong to the semester
     const courses = await Course.find({
@@ -51,8 +50,14 @@ export const registerForCourses = async (req, res) => {
       semesterId: semesterId
     });
 
-    // check for existing registrations
+    if (courses.length !== courseIds.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'One or more courses not found or not available for this semester'
+      });
+    }
 
+    // Check for existing registrations
     const existingRegistrations = await CourseRegistration.find({
       studentId: student._id,
       courseId: { $in: courseIds },
@@ -83,6 +88,7 @@ export const registerForCourses = async (req, res) => {
 
     const createdRegistrations = await CourseRegistration.insertMany(registrations);
 
+    // Populate the created registrations
     const populatedRegistrations = await CourseRegistration.find({
       _id: { $in: createdRegistrations.map(reg => reg._id) }
     })
@@ -94,9 +100,6 @@ export const registerForCourses = async (req, res) => {
       message: `Successfully registered for ${courseIds.length} course(s)`,
       data: populatedRegistrations
     });
-
-
-
   } catch (error) {
     console.error('Error registering for courses:', error);
     res.status(500).json({
@@ -106,13 +109,9 @@ export const registerForCourses = async (req, res) => {
   }
 };
 
-
-// Get student's course registration
-
+// Get student's course registrations
 export const getStudentRegistrations = async (req, res) => {
-
   try {
-
     const { semesterId, status } = req.query;
 
     // Get student profile
@@ -126,7 +125,6 @@ export const getStudentRegistrations = async (req, res) => {
 
     let query = { studentId: student._id };
 
-
     if (semesterId) query.semesterId = semesterId;
     if (status) query.status = status;
 
@@ -138,9 +136,7 @@ export const getStudentRegistrations = async (req, res) => {
     res.json({
       success: true,
       data: registrations
-    })
-
-
+    });
   } catch (error) {
     console.error('Error fetching student registrations:', error);
     res.status(500).json({
@@ -151,11 +147,9 @@ export const getStudentRegistrations = async (req, res) => {
 };
 
 // Drop a course (Student)
-
 export const dropCourse = async (req, res) => {
   try {
     const { registrationId } = req.params;
-
 
     // Get student profile
     const student = await Student.findOne({ userId: req.user.id });
@@ -193,11 +187,9 @@ export const dropCourse = async (req, res) => {
       });
     }
 
-
     registration.status = 'dropped';
     registration.dropDate = new Date();
     await registration.save();
-
 
     await registration.populate('courseId', 'courseName courseCode');
 
@@ -206,7 +198,6 @@ export const dropCourse = async (req, res) => {
       message: 'Course dropped successfully',
       data: registration
     });
-
   } catch (error) {
     console.error('Error dropping course:', error);
     res.status(500).json({
@@ -216,8 +207,7 @@ export const dropCourse = async (req, res) => {
   }
 };
 
-// Get all course registration(Admin)
-
+// Get all course registrations (Admin)
 export const getAllRegistrations = async (req, res) => {
   try {
     const {
@@ -235,7 +225,6 @@ export const getAllRegistrations = async (req, res) => {
     if (semesterId) query.semesterId = semesterId;
     if (status) query.status = status;
     if (courseId) query.courseId = courseId;
-
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
@@ -268,7 +257,7 @@ export const getAllRegistrations = async (req, res) => {
         }
       },
       { $unwind: '$semester' }
-    ]
+    ];
 
     // Add search filter
     if (search) {
@@ -296,7 +285,7 @@ export const getAllRegistrations = async (req, res) => {
       { $sort: { registrationDate: -1 } },
       { $skip: skip },
       { $limit: parseInt(limit) }
-    )
+    );
 
     const registrations = await CourseRegistration.aggregate(aggregationPipeline);
 
@@ -306,7 +295,6 @@ export const getAllRegistrations = async (req, res) => {
     const totalResult = await CourseRegistration.aggregate(totalPipeline);
     const total = totalResult[0]?.total || 0;
     const totalPages = Math.ceil(total / parseInt(limit));
-
 
     res.json({
       success: true,
@@ -320,8 +308,6 @@ export const getAllRegistrations = async (req, res) => {
         }
       }
     });
-
-
   } catch (error) {
     console.error('Error fetching all registrations:', error);
     res.status(500).json({
@@ -331,8 +317,7 @@ export const getAllRegistrations = async (req, res) => {
   }
 };
 
-
-// update registration status (Admin)
+// Update registration status (Admin)
 export const updateRegistrationStatus = async (req, res) => {
   try {
     const { registrationId } = req.params;
@@ -352,7 +337,6 @@ export const updateRegistrationStatus = async (req, res) => {
       .populate('courseId', 'courseName courseCode')
       .populate('semesterId', 'name academicYear');
 
-
     if (!registration) {
       return res.status(404).json({
         success: false,
@@ -365,7 +349,6 @@ export const updateRegistrationStatus = async (req, res) => {
       message: 'Registration status updated successfully',
       data: registration
     });
-
   } catch (error) {
     console.error('Error updating registration status:', error);
     res.status(500).json({
@@ -373,16 +356,13 @@ export const updateRegistrationStatus = async (req, res) => {
       message: 'Failed to update registration status'
     });
   }
-}
-
+};
 
 // Add grade to registration (Admin)
-
 export const addGrade = async (req, res) => {
   try {
     const { registrationId } = req.params;
     const { grade, notes } = req.body;
-
 
     if (grade < 0 || grade > 100) {
       return res.status(400).json({
@@ -399,7 +379,6 @@ export const addGrade = async (req, res) => {
       .populate('studentId', 'fullName studentId')
       .populate('courseId', 'courseName courseCode credits');
 
-
     if (!registration) {
       return res.status(404).json({
         success: false,
@@ -412,7 +391,6 @@ export const addGrade = async (req, res) => {
       message: 'Grade added successfully',
       data: registration
     });
-
   } catch (error) {
     console.error('Error adding grade:', error);
     res.status(500).json({
@@ -422,17 +400,13 @@ export const addGrade = async (req, res) => {
   }
 };
 
-
 // Get registration statistics
-
 export const getRegistrationStatistics = async (req, res) => {
   try {
-
     const { semesterId } = req.query;
 
     let matchStage = {};
     if (semesterId) matchStage.semesterId = mongoose.Types.ObjectId(semesterId);
-
 
     // Registration status distribution
     const statusStats = await CourseRegistration.aggregate([
@@ -470,7 +444,6 @@ export const getRegistrationStatistics = async (req, res) => {
     // Total unique students
     const uniqueStudents = await CourseRegistration.distinct('studentId', matchStage);
 
-
     // Average grade if grades are available
     const gradeStats = await CourseRegistration.aggregate([
       {
@@ -497,7 +470,6 @@ export const getRegistrationStatistics = async (req, res) => {
         gradeStats: gradeStats[0] || { averageGrade: 0, totalGraded: 0 }
       }
     });
-
   } catch (error) {
     console.error('Error fetching registration statistics:', error);
     res.status(500).json({
@@ -506,7 +478,6 @@ export const getRegistrationStatistics = async (req, res) => {
     });
   }
 };
-
 
 // Get available courses for registration
 export const getAvailableCourses = async (req, res) => {

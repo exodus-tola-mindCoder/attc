@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { api } from '../services/api';
-
 
 interface User {
   id: string;
   username: string;
   email: string;
   role: 'student' | 'admin' | 'clinic';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   studentProfile?: any;
 }
 
@@ -18,10 +16,11 @@ interface AuthContextType {
   register: (username: string, email: string, password: string, role?: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
-};
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -32,8 +31,7 @@ export const useAuth = () => {
 
 interface AuthProviderProps {
   children: ReactNode;
-};
-
+}
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -54,6 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(response.data);
     } catch (error) {
       localStorage.removeItem('token');
+      console.log('error', error)
     } finally {
       setLoading(false);
     }
@@ -78,11 +77,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
-  }
+  };
 
   return (
     <AuthContext.Provider value={{ user, login, register, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};

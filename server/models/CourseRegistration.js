@@ -67,10 +67,10 @@ courseRegistrationSchema.index({ studentId: 1, status: 1 });
 // Calculate grade points based on grade
 courseRegistrationSchema.pre('save', function (next) {
   if (this.grade !== undefined) {
-    if (this.grade >= 90) this.gradePoints = 4.0;
-    else if (this.grade >= 85) this.gradePoints = 3.7;
-    else if (this.grade >= 80) this.gradePoints = 3.3;
-    else if (this.grade >= 75) this.gradePoints = 3.0;
+    if (this.grade >= 85) this.gradePoints = 4.0;
+    else if (this.grade >= 80) this.gradePoints = 3.7;
+    else if (this.grade >= 75) this.gradePoints = 3.5;
+    else if (this.grade >= 70) this.gradePoints = 3.0;
     else if (this.grade >= 70) this.gradePoints = 2.7;
     else if (this.grade >= 65) this.gradePoints = 2.3;
     else if (this.grade >= 60) this.gradePoints = 2.0;

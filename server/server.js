@@ -25,6 +25,9 @@ import analyticsRoutes from './routes/analytics.route.js'
 import messageRoutes from './routes/messages.route.js'
 import feedbackRoutes from './routes/feedback.route.js'
 import leaveRoutes from './routes/leave.route.js'
+import mealScheduleRoutes from './routes/mealSchedule.route.js';
+import mealFeedbackRoutes from './routes/mealFeedback.route.js';
+import graduationGalleryRoutes from './routes/graduationGallery.route.js'
 
 
 dotenv.config();
@@ -48,6 +51,9 @@ app.use('/api/instructors', instructorRoutes);
 app.use('/api/leave', leaveRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/meal-schedule', mealScheduleRoutes);
+app.use('/api/meal-feedback', mealFeedbackRoutes);
+app.use('/api/graduation-gallery', graduationGalleryRoutes);
 
 
 app.listen(PORT, () => {
